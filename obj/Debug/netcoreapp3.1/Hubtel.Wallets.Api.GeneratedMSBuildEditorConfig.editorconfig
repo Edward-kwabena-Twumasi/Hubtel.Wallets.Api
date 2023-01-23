@@ -1,0 +1,3 @@
+is_global = true
+build_property.RootNamespace = Hubtel.Wallets.Api
+build_property.ProjectDir = c:\dotnetapiverse\Hubtel.Wallets.Api\
