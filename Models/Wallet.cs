@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text.Json.Serialization;
 
 namespace Hubtel.Wallets.Api.Models
 {
@@ -31,8 +32,8 @@ namespace Hubtel.Wallets.Api.Models
         {
              CreatedAt = DateTime.Now;
             AccountNumber = accountNumber;
-           
-            if (accountNumber.Length == 10 && IsDigit(accountNumber))
+            bool isNumeric = int.TryParse(accountNumber, out _); 
+            if (accountNumber.Length == 10 && isNumeric)
             {
                 Type = AccountType.Momo;
                 if (accountNumber.StartsWith("024") || accountNumber.StartsWith("054") || accountNumber.StartsWith("059"))
@@ -48,7 +49,7 @@ namespace Hubtel.Wallets.Api.Models
                     Scheme = AccountScheme.AirtelTigo;
                 }
             }
-            else if (accountNumber.Length == 16)
+            else if (accountNumber.Length == 16 && isNumeric)
             {
                 Type = AccountType.Card;
                 if (accountNumber.StartsWith("4"))
@@ -63,5 +64,7 @@ namespace Hubtel.Wallets.Api.Models
             }
             else Type = AccountType.Invalid;
         }
+
+        public override string ToString() => JsonSerializer.Serialize<Wallet>(this);
     }
 }
