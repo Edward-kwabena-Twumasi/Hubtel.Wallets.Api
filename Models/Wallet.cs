@@ -32,7 +32,7 @@ namespace Hubtel.Wallets.Api.Models
              CreatedAt = DateTime.Now;
             AccountNumber = accountNumber;
            
-            if (accountNumber.Length == 10)
+            if (accountNumber.Length == 10 && IsDigit(accountNumber))
             {
                 Type = AccountType.Momo;
                 if (accountNumber.StartsWith("024") || accountNumber.StartsWith("054") || accountNumber.StartsWith("059"))
