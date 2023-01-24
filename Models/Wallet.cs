@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Text.RegularExpressions;
+
 
 namespace Hubtel.Wallets.Api.Models
 {
@@ -27,15 +29,24 @@ namespace Hubtel.Wallets.Api.Models
         public DateTime CreatedAt { get; set; }
         public string Owner { get; set; }
 
+        public bool IsValidGhanaNumber(string number)
+        {
+            if (!Regex.IsMatch(number, @"^(\+233|0)[23459]\d{8}$"))
+                return false;
+            return true;
+        }
+        
+
         public Wallet(string accountNumber)
         {
              CreatedAt = DateTime.Now;
             AccountNumber = accountNumber;
             bool isNumeric = long.TryParse(accountNumber, out _); 
-            if (accountNumber.Length == 10 && isNumeric)
+
+            if (IsValidGhanaNumber(accountNumber))
             {
                 Type = AccountType.Momo;
-                if (accountNumber.StartsWith("024") || accountNumber.StartsWith("054") || accountNumber.StartsWith("059"))
+                if (accountNumber.StartsWith("024") || accountNumber.StartsWith("054") || accountNumber.StartsWith("059") || accountNumber.StartsWith("055"))
                 {
                     Scheme = AccountScheme.MTN;
                 }
