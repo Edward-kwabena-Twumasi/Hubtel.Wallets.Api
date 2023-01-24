@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Text.Json.Serialization;
 
 namespace Hubtel.Wallets.Api.Models
 {
@@ -32,7 +31,7 @@ namespace Hubtel.Wallets.Api.Models
         {
              CreatedAt = DateTime.Now;
             AccountNumber = accountNumber;
-            bool isNumeric = int.TryParse(accountNumber, out _); 
+            bool isNumeric = long.TryParse(accountNumber, out _); 
             if (accountNumber.Length == 10 && isNumeric)
             {
                 Type = AccountType.Momo;
@@ -65,6 +64,5 @@ namespace Hubtel.Wallets.Api.Models
             else Type = AccountType.Invalid;
         }
 
-        public override string ToString() => JsonSerializer.Serialize<Wallet>(this);
     }
 }
