@@ -10,7 +10,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Hubtel.Wallets.Api.Converters;
 using Hubtel.Wallets.Api.Services;
+using System.Text.Json;
+
 
 namespace Hubtel.Wallets.Api
 {
@@ -28,6 +31,13 @@ namespace Hubtel.Wallets.Api
         {
             services.AddControllers();
             services.AddScoped<WalletService>();
+            services.AddControllers()
+            .AddJsonOptions(options => {
+                options.JsonSerializerOptions.Converters.Add(new WalletConverter());
+            });
+
+
+
 
         }
 
