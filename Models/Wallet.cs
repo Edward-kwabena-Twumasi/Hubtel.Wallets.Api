@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Text.RegularExpressions;
+using System.Collections.Generic;
+
 
 
 namespace Hubtel.Wallets.Api.Models
@@ -35,33 +37,63 @@ namespace Hubtel.Wallets.Api.Models
                 return false;
             return true;
         }
-        
+
+        public bool IsValidCardNumber(string cardNumber)
+        {
+            int sum = 0;
+            bool isSecondDigit = false;
+            for (int i = cardNumber.Length - 1; i >= 0; i--)
+            {
+                int digit = int.Parse(cardNumber[i].ToString());
+                if (isSecondDigit)
+                {
+                    digit *= 2;
+                    if (digit > 9)
+                    {
+                        digit -= 9;
+                    }
+                }
+                sum += digit;
+                isSecondDigit = !isSecondDigit;
+            }
+            return sum % 10 == 0;
+        }
+
 
         public Wallet(string accountNumber)
         {
-             CreatedAt = DateTime.Now;
+            CreatedAt = DateTime.Now;
             AccountNumber = accountNumber;
+
             bool isNumeric = long.TryParse(accountNumber, out _); 
 
             if (IsValidGhanaNumber(accountNumber))
             {
+                var tenDigitAccNumber = accountNumber.Replace("+233", "0");
+                AccountNumber = tenDigitAccNumber;
+
                 Type = AccountType.Momo;
-                if (accountNumber.StartsWith("024") || accountNumber.StartsWith("054") || accountNumber.StartsWith("059") || accountNumber.StartsWith("055"))
+
+                if (Array.Exists(new[] { "24", "25", "54", "59" }, s => tenDigitAccNumber.Substring(1, 2) == s))
                 {
                     Scheme = AccountScheme.MTN;
                 }
-                else if (accountNumber.StartsWith("050") || accountNumber.StartsWith("020"))
+
+                else if (Array.Exists(new[] { "20","50" }, s => tenDigitAccNumber.Substring(1, 2) == s))
                 {
                     Scheme = AccountScheme.Vodafone;
                 }
-                else if (accountNumber.StartsWith("026") || accountNumber.StartsWith("056"))
+
+                else if (Array.Exists(new[] { "26", "27", "56", "57" }, s => tenDigitAccNumber.Substring(1, 2) == s))
                 {
                     Scheme = AccountScheme.AirtelTigo;
                 }
             }
+
             else if (accountNumber.Length == 16 && isNumeric)
             {
                 Type = AccountType.Card;
+
                 if (accountNumber.StartsWith("4"))
                 {
                     Scheme = AccountScheme.Visa;

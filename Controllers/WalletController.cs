@@ -44,7 +44,13 @@ namespace Hubtel.Wallets.Api.Controllers
                 return BadRequest("Invalid wallet account number. ");
             }
 
+
             var addedWallet = _service.AddNewWallet(wallet.AccountNumber, wallet.Name, wallet.Owner);
+            if (addedWallet == null)
+            {
+                return Conflict("Account exists or you have exceeded maximum 4 accounts");
+
+            }
             return CreatedAtAction(nameof(Get), new { id = addedWallet.Id }, addedWallet);
         }
 
