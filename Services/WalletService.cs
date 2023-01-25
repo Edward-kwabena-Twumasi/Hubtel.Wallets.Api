@@ -15,18 +15,6 @@ namespace Hubtel.Wallets.Api.Services
             _dbContext = dbContext;
         }
 
-
-
-        public async Task<IEnumerable<Wallet>> GetAll()
-        {
-            return _dbContext.Wallets.ToList();
-        }
-
-        public async Task<Wallet> GetById(string id)
-        {
-            return _dbContext.Wallets.FirstOrDefault(w => w.Id == id);
-        }
-
         public bool IsValid(string accountNumber)
         {
             var wallet = new Wallet(accountNumber);
@@ -38,6 +26,25 @@ namespace Hubtel.Wallets.Api.Services
             // return false;
             return true;
         }
+
+        public async Task<IEnumerable<Wallet>> GetAll()
+        {
+            return await Task.Run(() =>
+            {
+                return _dbContext.Wallets.ToList();
+            });
+
+        }
+
+        public async Task<Wallet> GetById(string id)
+        {
+            return await Task.Run(() =>
+            {
+                return _dbContext.Wallets.FirstOrDefault(w => w.Id == id);
+            });
+        }
+
+
 
         //Add new wallet
         public async Task<Wallet> AddNewWallet(string accountNumber, string name, string owner)
@@ -51,13 +58,21 @@ namespace Hubtel.Wallets.Api.Services
 
         public async Task<Wallet> Add(Wallet wallet)
         {
-            var existingWallet = _dbContext.Wallets.FirstOrDefault(w => w.AccountNumber == wallet.AccountNumber);
+            var existingWallet = await Task.Run(() =>
+            {
+                return _dbContext.Wallets.FirstOrDefault(w => w.AccountNumber == wallet.AccountNumber);
+            });
+
             if (existingWallet != null)
             {
                 return null;
             }
 
-            var userWallets = _dbContext.Wallets.Where(w => w.Owner == wallet.Owner).ToList();
+            var userWallets = await Task.Run(() =>
+            {
+                return _dbContext.Wallets.Where(w => w.Owner == wallet.Owner).ToList();
+            });
+
             if (userWallets.Count() >= 4)
             {
                 return null;
@@ -70,10 +85,18 @@ namespace Hubtel.Wallets.Api.Services
 
         public async Task<Wallet> Delete(string id)
         {
-            var wallet = _dbContext.Wallets.FirstOrDefault(w => w.Id == id);
+            var wallet = await Task.Run(() =>
+            {
+                return _dbContext.Wallets.FirstOrDefault(w => w.Id == id);
+            });
+
             if (wallet != null)
             {
-                _dbContext.Wallets.Remove(wallet);
+                await Task.Run(() =>
+                {
+                    return _dbContext.Wallets.Remove(wallet);
+                });
+
                 await _dbContext.SaveChangesAsync();
             }
             return wallet;
