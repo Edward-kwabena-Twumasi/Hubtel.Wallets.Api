@@ -5,7 +5,7 @@ using Hubtel.Wallets.Api.Models;
 
 namespace Hubtel.Wallets.Api.Converters
 {
- 
+
     public class WalletConverter : JsonConverter<Wallet>
     {
         public override Wallet Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
@@ -23,6 +23,7 @@ namespace Hubtel.Wallets.Api.Converters
         public override void Write(Utf8JsonWriter writer, Wallet value, JsonSerializerOptions options)
         {
             writer.WriteStartObject();
+            writer.WriteString("Id", value.Id);
             writer.WriteString("AccountNumber", value.AccountNumber);
             writer.WriteString("Type", value.Type.ToString());
             writer.WriteString("Scheme", value.Scheme.ToString());

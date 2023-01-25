@@ -20,7 +20,8 @@ namespace Hubtel.Wallets.Api.Models
             Mastercard,
             MTN,
             Vodafone,
-            AirtelTigo
+            AirtelTigo,
+            Other
         }
 
         public string Id { get; set; }
@@ -63,9 +64,10 @@ namespace Hubtel.Wallets.Api.Models
         public Wallet(string accountNumber)
         {
             CreatedAt = DateTime.Now;
+            Id = Guid.NewGuid().ToString();
             AccountNumber = accountNumber;
 
-            bool isNumeric = long.TryParse(accountNumber, out _); 
+            bool isNumeric = long.TryParse(accountNumber, out _);
 
             if (IsValidGhanaNumber(accountNumber))
             {
@@ -74,12 +76,12 @@ namespace Hubtel.Wallets.Api.Models
 
                 Type = AccountType.Momo;
 
-                if (Array.Exists(new[] { "24", "25", "54", "59" }, s => tenDigitAccNumber.Substring(1, 2) == s))
+                if (Array.Exists(new[] { "24", "54", "59", "55" }, s => tenDigitAccNumber.Substring(1, 2) == s))
                 {
                     Scheme = AccountScheme.MTN;
                 }
 
-                else if (Array.Exists(new[] { "20","50" }, s => tenDigitAccNumber.Substring(1, 2) == s))
+                else if (Array.Exists(new[] { "20", "50" }, s => tenDigitAccNumber.Substring(1, 2) == s))
                 {
                     Scheme = AccountScheme.Vodafone;
                 }
@@ -88,9 +90,10 @@ namespace Hubtel.Wallets.Api.Models
                 {
                     Scheme = AccountScheme.AirtelTigo;
                 }
+                else Scheme = AccountScheme.Other;
             }
 
-            else if (accountNumber.Length == 16 && isNumeric)
+            else if (IsValidCardNumber(accountNumber))
             {
                 Type = AccountType.Card;
 
@@ -102,6 +105,7 @@ namespace Hubtel.Wallets.Api.Models
                 {
                     Scheme = AccountScheme.Mastercard;
                 }
+                else Scheme = AccountScheme.Other;
 
             }
             else Type = AccountType.Invalid;
