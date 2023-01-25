@@ -38,7 +38,7 @@ namespace Hubtel.Wallets.Api.Controllers
         [HttpPost]
         public async Task<ActionResult<Wallet>> Post(Wallet wallet)
         {
-            
+
             if (!_walletService.IsValid(wallet.AccountNumber))
             {
                 return BadRequest("Invalid wallet account number. ");

@@ -77,6 +77,7 @@ namespace Hubtel.Wallets.Api.Services
                 return null;
             }
 
+            wallet.AccountNumber = wallet.AccountNumber.Substring(0, 6);
             await _dbContext.Wallets.AddAsync(wallet);
             await _dbContext.SaveChangesAsync();
             return wallet;
