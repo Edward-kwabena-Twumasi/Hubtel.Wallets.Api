@@ -47,7 +47,7 @@ namespace Hubtel.Wallets.Api.Services
 
 
         //Add new wallet
-        public async Task<Wallet> AddNewWallet(string accountNumber, string name, string owner)
+        public async Task<WalletResponse> AddNewWallet(string accountNumber, string name, string owner)
         {
             var wallet = new Wallet(accountNumber);
             wallet.Name = name;
@@ -55,32 +55,49 @@ namespace Hubtel.Wallets.Api.Services
             return await Add(wallet);
         }
 
-        public async Task<Wallet> Add(Wallet wallet)
+        public async Task<WalletResponse> Add(Wallet wallet)
         {
             var existingWallet = await Task.Run(() =>
             {
-                return _dbContext.Wallets.FirstOrDefault(w => w.AccountNumber == wallet.AccountNumber);
+                return _dbContext.Wallets.FirstOrDefault(w => w.AccountNumber == wallet.AccountNumber.Substring(0,6));
             });
-
-            if (existingWallet != null)
-            {
-                return null;
-            }
 
             var userWallets = await Task.Run(() =>
             {
                 return _dbContext.Wallets.Where(w => w.Owner == wallet.Owner).ToList();
             });
 
+            if (existingWallet != null)
+            {
+                return new WalletResponse
+                {
+                    status = "409",
+                    message = "Account number already exists"
+                };
+            }
+          
             if (userWallets.Count() >= 4)
             {
-                return null;
+                 return new WalletResponse
+                {
+                    status = "429",
+                    message = "Too many wallets.Cant add 5th card"
+                };
             }
-
-            wallet.AccountNumber = wallet.AccountNumber.Substring(0, 6);
+            
+            if (wallet.Type == Wallet.AccountType.Card)
+            {
+                wallet.AccountNumber = wallet.AccountNumber.Substring(0, 6);
+            }
+            
             await _dbContext.Wallets.AddAsync(wallet);
             await _dbContext.SaveChangesAsync();
-            return wallet;
+            return new WalletResponse
+            {
+                status = "201",
+                message = "Wallet created successfully",
+                wallet = wallet
+            };
         }
 
         public async Task<Wallet> Delete(string id)

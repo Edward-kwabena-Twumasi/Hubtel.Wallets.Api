@@ -46,12 +46,15 @@ namespace Hubtel.Wallets.Api.Controllers
 
 
             var addedWallet = await _walletService.AddNewWallet(wallet.AccountNumber, wallet.Name, wallet.Owner);
-            if (addedWallet == null)
+            if (addedWallet.status == "409")
             {
-                return Conflict("Account exists or you have exceeded maximum 4 accounts");
-
+                return BadRequest(addedWallet.message);
             }
-            return CreatedAtAction(nameof(Get), new { id = addedWallet.Id }, addedWallet);
+            else if (addedWallet.status == "429")
+            {
+                return StatusCode(429, addedWallet.message);
+            }
+            return CreatedAtAction(nameof(Get), new { id = addedWallet.wallet.Id }, addedWallet.wallet);
         }
 
         [HttpDelete("{id}")]
