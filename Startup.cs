@@ -12,7 +12,11 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Hubtel.Wallets.Api.Converters;
 using Hubtel.Wallets.Api.Services;
+using Hubtel.Wallets.Api.Models;
 using System.Text.Json;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.InMemory;
+
 
 
 namespace Hubtel.Wallets.Api
@@ -30,13 +34,13 @@ namespace Hubtel.Wallets.Api
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
-            services.AddScoped<WalletService>();
             services.AddControllers()
             .AddJsonOptions(options => {
                 options.JsonSerializerOptions.Converters.Add(new WalletConverter());
             });
-
-
+            services.AddDbContext<WalletDbContext>(opt =>
+            opt.UseInMemoryDatabase("Wallets"));
+            services.AddTransient<WalletService>();
 
 
         }
