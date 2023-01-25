@@ -95,6 +95,7 @@ namespace Hubtel.Wallets.Api.Models
 
             else if (IsValidCardNumber(accountNumber))
             {
+                AccountNumber = accountNumber.Substring(0, 6);
                 Type = AccountType.Card;
 
                 if (accountNumber.StartsWith("4"))
