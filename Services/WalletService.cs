@@ -1,12 +1,12 @@
-﻿using System.Collections.Generic;
+﻿
+using System.Collections.Generic;
 using System.Linq;
 using Hubtel.Wallets.Api.Models;
 using System.Threading.Tasks;
 
-
 namespace Hubtel.Wallets.Api.Services
 {
-    public class WalletService
+    public class WalletService : IWalletService
     {
         private readonly WalletDbContext _dbContext;
 
@@ -52,7 +52,6 @@ namespace Hubtel.Wallets.Api.Services
             var wallet = new Wallet(accountNumber);
             wallet.Name = name;
             wallet.Owner = owner;
-            wallet.Id = "123";
             return await Add(wallet);
         }
 

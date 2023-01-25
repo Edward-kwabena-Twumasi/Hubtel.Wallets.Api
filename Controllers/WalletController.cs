@@ -12,23 +12,22 @@ namespace Hubtel.Wallets.Api.Controllers
     [Route("api/wallets")]
     public class WalletController : ControllerBase
     {
-        private readonly WalletService _service;
-
-        public WalletController(WalletService service)
+        private readonly IWalletService _walletService;
+        public WalletController(IWalletService walletService)
         {
-            _service = service;
+            _walletService = walletService;
         }
 
         [HttpGet]
         public async Task<IEnumerable<Wallet>> Get()
         {
-            return await _service.GetAll();
+            return await _walletService.GetAll();
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<Wallet>> Get(string id)
         {
-            var wallet = await _service.GetById(id);
+            var wallet = await _walletService.GetById(id);
             if (wallet == null)
             {
                 return NotFound();
@@ -40,13 +39,13 @@ namespace Hubtel.Wallets.Api.Controllers
         public async Task<ActionResult<Wallet>> Post(Wallet wallet)
         {
             
-            if (!_service.IsValid(wallet.AccountNumber))
+            if (!_walletService.IsValid(wallet.AccountNumber))
             {
                 return BadRequest("Invalid wallet account number. ");
             }
 
 
-            var addedWallet = await _service.AddNewWallet(wallet.AccountNumber, wallet.Name, wallet.Owner);
+            var addedWallet = await _walletService.AddNewWallet(wallet.AccountNumber, wallet.Name, wallet.Owner);
             if (addedWallet == null)
             {
                 return Conflict("Account exists or you have exceeded maximum 4 accounts");
@@ -58,7 +57,7 @@ namespace Hubtel.Wallets.Api.Controllers
         [HttpDelete("{id}")]
         public async Task<ActionResult<Wallet>> Delete(string id)
         {
-            var wallet = await _service.Delete(id);
+            var wallet = await _walletService.Delete(id);
             if (wallet == null)
             {
                 return NotFound();
