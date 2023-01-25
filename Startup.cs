@@ -40,7 +40,7 @@ namespace Hubtel.Wallets.Api
             });
             services.AddDbContext<WalletDbContext>(opt =>
             opt.UseInMemoryDatabase("Wallets"));
-            services.AddTransient<WalletService>();
+            services.AddScoped<IWalletService, WalletService>();
 
 
         }
