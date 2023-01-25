@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using Hubtel.Wallets.Api.Models;
 using Hubtel.Wallets.Api.Services;
+using System.Threading.Tasks;
+
 
 namespace Hubtel.Wallets.Api.Controllers
 {
@@ -18,15 +20,15 @@ namespace Hubtel.Wallets.Api.Controllers
         }
 
         [HttpGet]
-        public IEnumerable<Wallet> Get()
+        public async Task<IEnumerable<Wallet>> Get()
         {
-            return _service.GetAll();
+            return await _service.GetAll();
         }
 
         [HttpGet("{id}")]
-        public ActionResult<Wallet> Get(string id)
+        public async Task<ActionResult<Wallet>> Get(string id)
         {
-            var wallet = _service.GetById(id);
+            var wallet = await _service.GetById(id);
             if (wallet == null)
             {
                 return NotFound();
@@ -35,17 +37,16 @@ namespace Hubtel.Wallets.Api.Controllers
         }
 
         [HttpPost]
-        public ActionResult<Wallet> Post(Wallet wallet)
+        public async Task<ActionResult<Wallet>> Post(Wallet wallet)
         {
-            Console.WriteLine(wallet.AccountNumber);
-            Console.WriteLine("......................");
+            
             if (!_service.IsValid(wallet.AccountNumber))
             {
                 return BadRequest("Invalid wallet account number. ");
             }
 
 
-            var addedWallet = _service.AddNewWallet(wallet.AccountNumber, wallet.Name, wallet.Owner);
+            var addedWallet = await _service.AddNewWallet(wallet.AccountNumber, wallet.Name, wallet.Owner);
             if (addedWallet == null)
             {
                 return Conflict("Account exists or you have exceeded maximum 4 accounts");
@@ -55,9 +56,9 @@ namespace Hubtel.Wallets.Api.Controllers
         }
 
         [HttpDelete("{id}")]
-        public ActionResult<Wallet> Delete(string id)
+        public async Task<ActionResult<Wallet>> Delete(string id)
         {
-            var wallet = _service.Delete(id);
+            var wallet = await _service.Delete(id);
             if (wallet == null)
             {
                 return NotFound();
