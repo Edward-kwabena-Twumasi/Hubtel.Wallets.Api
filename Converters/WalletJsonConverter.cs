@@ -11,9 +11,9 @@ namespace Hubtel.Wallets.Api.Converters
         public override Wallet Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
             var json = JsonSerializer.Deserialize<JsonElement>(ref reader);
-            var accountNumber = json.GetProperty("AccountNumber").GetString();
-            var owner = json.GetProperty("Owner").GetString();
-            var name = json.GetProperty("Name").GetString();
+            var accountNumber = json.GetProperty("accountNumber").GetString();
+            var owner = json.GetProperty("owner").GetString();
+            var name = json.GetProperty("name").GetString();
             var wallet = new Wallet(accountNumber);
             wallet.Owner = owner;
             wallet.Name = name;
