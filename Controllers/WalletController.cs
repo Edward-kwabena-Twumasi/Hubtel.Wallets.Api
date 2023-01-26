@@ -37,11 +37,11 @@ namespace Hubtel.Wallets.Api.Controllers
 
         [HttpPost]
         public async Task<ActionResult<Wallet>> Post([FromBody] Wallet wallet)
-        {  
-             //Validate Wallet fields supplied in request body
-             if (ModelState.IsValid)
+        {
+            //Validate Wallet fields supplied in request body
+            if (ModelState.IsValid)
             {
-                    if (!_walletService.IsValid(wallet.AccountNumber))
+                if (!_walletService.IsValid(wallet.AccountNumber))
                 {
                     return BadRequest("Invalid wallet account number. ");
                 }
@@ -53,8 +53,8 @@ namespace Hubtel.Wallets.Api.Controllers
                     return BadRequest(addNewWallet.message);
                 }
 
-                return CreatedAtAction(nameof(Get), new { id = addNewWallet.wallet.Id }, addNewWallet.wallet); 
-               
+                return CreatedAtAction(nameof(Get), new { id = addNewWallet.wallet.Id }, addNewWallet.wallet);
+
             }
             else
             {
@@ -62,7 +62,7 @@ namespace Hubtel.Wallets.Api.Controllers
                 return BadRequest(ModelState);
             }
 
-           
+
         }
 
         [HttpDelete("{id}")]

@@ -2,6 +2,7 @@
 using System.Text.RegularExpressions;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace Hubtel.Wallets.Api.Models
 {
@@ -23,30 +24,37 @@ namespace Hubtel.Wallets.Api.Models
             Unsupported
         }
 
-        
+
         public string Id { get; set; }
 
-        [Required]
-        [StringLength(25, MinimumLength = 3)]
+        [Required(ErrorMessage = " Specify 'name' field in request body.")]
+        [StringLength(25, MinimumLength = 3, ErrorMessage = "Value should range from 3-25 characters")]
+        [JsonPropertyName("name")]
         public string Name { get; set; }
         public AccountType Type { get; set; }
 
-        [Required]
+
+        [JsonPropertyName("accountNumber")]
+        [Required(ErrorMessage = " Specify 'accountNumber' field in request body")]
         public string AccountNumber { get; set; }
         public AccountScheme Scheme { get; set; }
         public DateTime CreatedAt { get; set; }
 
-        [Required]
-        [RegularExpression(@"^(\+233|0)[23459]\d{8}$")]
+
+        [JsonPropertyName("ownerPhone")]
+        [RegularExpression(@"^(\+233|0)[23459]\d{8}$", ErrorMessage = "The phone number is not valid.")]
+        [Required(ErrorMessage = "Specify 'ownerPhone' field in request body.")]
         public string Owner { get; set; }
 
+        //Algorithm to check valid ghana number
         public bool IsValidGhanaNumber(string number)
         {
             if (!Regex.IsMatch(number, @"^(\+233|0)[23459]\d{8}$"))
                 return false;
             return true;
         }
-
+        
+        // Algorithm to check card number is valid(Lhun Algorithm)
         public bool IsValidCardNumber(string cardNumber)
         {
             int sum = 0;

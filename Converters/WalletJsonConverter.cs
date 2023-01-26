@@ -23,7 +23,7 @@ namespace Hubtel.Wallets.Api.Converters
                 accountNumber = "";
             }
 
-            if (json.TryGetProperty("owner", out var ownerProp) && ownerProp.ValueKind != JsonValueKind.Null)
+            if (json.TryGetProperty("ownerPhone", out var ownerProp) && ownerProp.ValueKind != JsonValueKind.Null)
             {
                 owner = ownerProp.GetString();
             }
