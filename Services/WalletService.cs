@@ -58,20 +58,24 @@ namespace Hubtel.Wallets.Api.Services
         public async Task<WalletResponse> Add(Wallet wallet)
         {
             var existingWallet = await Task.Run(() =>
-            {
-                return _dbContext.Wallets.FirstOrDefault(w => w.AccountNumber == wallet.AccountNumber.Substring(0,6));
+            {            
+                    return wallet.Type == Wallet.AccountType.Card? 
+                    _dbContext.Wallets.FirstOrDefault(w => w.AccountNumber == wallet.AccountNumber.Substring(0,6)):
+                    _dbContext.Wallets.FirstOrDefault(w => w.AccountNumber == wallet.AccountNumber)
+                    ;
+                           
             });
 
             var userWallets = await Task.Run(() =>
             {
                 return _dbContext.Wallets.Where(w => w.Owner == wallet.Owner).ToList();
             });
-
+            
             if (existingWallet != null)
             {
                 return new WalletResponse
                 {
-                    status = "409",
+                    status = "400",
                     message = "Account number already exists"
                 };
             }
@@ -80,8 +84,17 @@ namespace Hubtel.Wallets.Api.Services
             {
                  return new WalletResponse
                 {
-                    status = "429",
+                    status = "400",
                     message = "Too many wallets.Cant add 5th card"
+                };
+            }
+
+            if (wallet.Scheme == Wallet.AccountScheme.Unsupported)
+            {
+                return new WalletResponse
+                {
+                    status = "400",
+                    message = "Unsupported scheme. Should be one of [Mtn,Vodafone,Airteltigo,Visa,Mastercard]"
                 };
             }
             

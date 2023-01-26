@@ -44,17 +44,14 @@ namespace Hubtel.Wallets.Api.Controllers
                 return BadRequest("Invalid wallet account number. ");
             }
 
+            var addNewWallet = await _walletService.AddNewWallet(wallet.AccountNumber, wallet.Name, wallet.Owner);
 
-            var addedWallet = await _walletService.AddNewWallet(wallet.AccountNumber, wallet.Name, wallet.Owner);
-            if (addedWallet.status == "409")
+            if (addNewWallet.status == "400")
             {
-                return BadRequest(addedWallet.message);
+                return BadRequest(addNewWallet.message);
             }
-            else if (addedWallet.status == "429")
-            {
-                return StatusCode(429, addedWallet.message);
-            }
-            return CreatedAtAction(nameof(Get), new { id = addedWallet.wallet.Id }, addedWallet.wallet);
+
+            return CreatedAtAction(nameof(Get), new { id = addNewWallet.wallet.Id }, addNewWallet.wallet);
         }
 
         [HttpDelete("{id}")]

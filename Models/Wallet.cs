@@ -21,7 +21,7 @@ namespace Hubtel.Wallets.Api.Models
             MTN,
             Vodafone,
             AirtelTigo,
-            Other
+            Unsupported
         }
 
         public string Id { get; set; }
@@ -90,7 +90,7 @@ namespace Hubtel.Wallets.Api.Models
                 {
                     Scheme = AccountScheme.AirtelTigo;
                 }
-                else Scheme = AccountScheme.Other;
+                else Scheme = AccountScheme.Unsupported;
             }
 
             else if (IsValidCardNumber(accountNumber))
@@ -105,7 +105,7 @@ namespace Hubtel.Wallets.Api.Models
                 {
                     Scheme = AccountScheme.Mastercard;
                 }
-                else Scheme = AccountScheme.Other;
+                else Scheme = AccountScheme.Unsupported;
 
             }
             else Type = AccountType.Invalid;
