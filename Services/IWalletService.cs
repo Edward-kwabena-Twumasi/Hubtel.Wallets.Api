@@ -9,8 +9,8 @@ namespace Hubtel.Wallets.Api.Services
         bool IsValid(string accountNumber);
         Task<IEnumerable<Wallet>> GetAll();
         Task<Wallet> GetById(string id);
-        Task<WalletResponse> AddNewWallet(string accountNumber, string name, string owner);
-        Task<WalletResponse> Add(Wallet wallet);
+        Task<WalletApiResponse> AddNewWallet(string accountNumber, string name, string owner);
+        Task<WalletApiResponse> Add(Wallet wallet);
         Task<Wallet> Delete(string id);
     }
 }

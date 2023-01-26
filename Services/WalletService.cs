@@ -47,7 +47,7 @@ namespace Hubtel.Wallets.Api.Services
 
 
         //Add new wallet
-        public async Task<WalletResponse> AddNewWallet(string accountNumber, string name, string owner)
+        public async Task<WalletApiResponse> AddNewWallet(string accountNumber, string name, string owner)
         {
             var wallet = new Wallet(accountNumber);
             wallet.Name = name;
@@ -55,7 +55,7 @@ namespace Hubtel.Wallets.Api.Services
             return await Add(wallet);
         }
 
-        public async Task<WalletResponse> Add(Wallet wallet)
+        public async Task<WalletApiResponse> Add(Wallet wallet)
         {
             var existingWallet = await Task.Run(() =>
             {            
@@ -73,7 +73,8 @@ namespace Hubtel.Wallets.Api.Services
             
             if (existingWallet != null)
             {
-                return new WalletResponse
+               
+                return new WalletApiResponse
                 {
                     status = "400",
                     message = "Account number already exists"
@@ -82,7 +83,7 @@ namespace Hubtel.Wallets.Api.Services
           
             if (userWallets.Count() >= 4)
             {
-                 return new WalletResponse
+                 return new WalletApiResponse
                 {
                     status = "400",
                     message = "Too many wallets.Cant add 5th card"
@@ -91,7 +92,7 @@ namespace Hubtel.Wallets.Api.Services
 
             if (wallet.Scheme == Wallet.AccountScheme.Unsupported)
             {
-                return new WalletResponse
+                return new WalletApiResponse
                 {
                     status = "400",
                     message = "Unsupported scheme. Should be one of [Mtn,Vodafone,Airteltigo,Visa,Mastercard]"
@@ -105,7 +106,8 @@ namespace Hubtel.Wallets.Api.Services
             
             await _dbContext.Wallets.AddAsync(wallet);
             await _dbContext.SaveChangesAsync();
-            return new WalletResponse
+
+            return new WalletApiResponse
             {
                 status = "201",
                 message = "Wallet created successfully",
