@@ -36,22 +36,33 @@ namespace Hubtel.Wallets.Api.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<Wallet>> Post(Wallet wallet)
-        {
-
-            if (!_walletService.IsValid(wallet.AccountNumber))
+        public async Task<ActionResult<Wallet>> Post([FromBody] Wallet wallet)
+        {  
+             //Validate Wallet fields supplied in request body
+             if (ModelState.IsValid)
             {
-                return BadRequest("Invalid wallet account number. ");
+                    if (!_walletService.IsValid(wallet.AccountNumber))
+                {
+                    return BadRequest("Invalid wallet account number. ");
+                }
+
+                WalletApiResponse addNewWallet = await _walletService.AddNewWallet(wallet.AccountNumber, wallet.Name, wallet.Owner);
+
+                if (addNewWallet.status == "400")
+                {
+                    return BadRequest(addNewWallet.message);
+                }
+
+                return CreatedAtAction(nameof(Get), new { id = addNewWallet.wallet.Id }, addNewWallet.wallet); 
+               
+            }
+            else
+            {
+                // model is not valid, return a list of validation errors
+                return BadRequest(ModelState);
             }
 
-            WalletApiResponse addNewWallet = await _walletService.AddNewWallet(wallet.AccountNumber, wallet.Name, wallet.Owner);
-
-            if (addNewWallet.status == "400")
-            {
-                return BadRequest(addNewWallet.message);
-            }
-
-            return CreatedAtAction(nameof(Get), new { id = addNewWallet.wallet.Id }, addNewWallet.wallet);
+           
         }
 
         [HttpDelete("{id}")]
