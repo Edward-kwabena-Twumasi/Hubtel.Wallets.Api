@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Text.RegularExpressions;
 using System.Collections.Generic;
-
-
+using System.ComponentModel.DataAnnotations;
 
 namespace Hubtel.Wallets.Api.Models
 {
@@ -24,12 +23,21 @@ namespace Hubtel.Wallets.Api.Models
             Unsupported
         }
 
+        
         public string Id { get; set; }
+
+        [Required]
+        [StringLength(25, MinimumLength = 3)]
         public string Name { get; set; }
         public AccountType Type { get; set; }
+
+        [Required]
         public string AccountNumber { get; set; }
         public AccountScheme Scheme { get; set; }
         public DateTime CreatedAt { get; set; }
+
+        [Required]
+        [RegularExpression(@"^(\+233|0)[23459]\d{8}$")]
         public string Owner { get; set; }
 
         public bool IsValidGhanaNumber(string number)
