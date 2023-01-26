@@ -44,7 +44,7 @@ namespace Hubtel.Wallets.Api.Controllers
                 return BadRequest("Invalid wallet account number. ");
             }
 
-            var addNewWallet = await _walletService.AddNewWallet(wallet.AccountNumber, wallet.Name, wallet.Owner);
+            WalletApiResponse addNewWallet = await _walletService.AddNewWallet(wallet.AccountNumber, wallet.Name, wallet.Owner);
 
             if (addNewWallet.status == "400")
             {

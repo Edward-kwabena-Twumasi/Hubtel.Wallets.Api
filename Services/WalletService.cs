@@ -17,16 +17,17 @@ namespace Hubtel.Wallets.Api.Services
 
         public bool IsValid(string accountNumber)
         {
-            var wallet = new Wallet(accountNumber);
+            Wallet wallet = new Wallet(accountNumber);
 
             if (wallet.Type == Wallet.AccountType.Invalid)
             {
                 return false;
             }
-            // return false;
+
             return true;
         }
 
+        // Get all wallets
         public async Task<IEnumerable<Wallet>> GetAll()
         {
             return await Task.Run(() =>
@@ -36,6 +37,7 @@ namespace Hubtel.Wallets.Api.Services
 
         }
 
+        // Get wallet by specified id
         public async Task<Wallet> GetById(string id)
         {
             return await Task.Run(() =>
@@ -45,11 +47,10 @@ namespace Hubtel.Wallets.Api.Services
         }
 
 
-
         //Add new wallet
         public async Task<WalletApiResponse> AddNewWallet(string accountNumber, string name, string owner)
         {
-            var wallet = new Wallet(accountNumber);
+            Wallet wallet = new Wallet(accountNumber);
             wallet.Name = name;
             wallet.Owner = owner;
             return await Add(wallet);
@@ -57,33 +58,30 @@ namespace Hubtel.Wallets.Api.Services
 
         public async Task<WalletApiResponse> Add(Wallet wallet)
         {
-            var existingWallet = await Task.Run(() =>
-            {            
-                    return wallet.Type == Wallet.AccountType.Card? 
-                    _dbContext.Wallets.FirstOrDefault(w => w.AccountNumber == wallet.AccountNumber.Substring(0,6)):
-                    _dbContext.Wallets.FirstOrDefault(w => w.AccountNumber == wallet.AccountNumber)
-                    ;
-                           
+            Wallet existingWallet = await Task.Run(() =>
+            {
+                return wallet.Type == Wallet.AccountType.Card ?
+                _dbContext.Wallets.FirstOrDefault(w => w.AccountNumber == wallet.AccountNumber.Substring(0, 6)) :
+                _dbContext.Wallets.FirstOrDefault(w => w.AccountNumber == wallet.AccountNumber);
             });
 
-            var userWallets = await Task.Run(() =>
+            List<Wallet> userWallets = await Task.Run(() =>
             {
                 return _dbContext.Wallets.Where(w => w.Owner == wallet.Owner).ToList();
             });
-            
+
             if (existingWallet != null)
             {
-               
                 return new WalletApiResponse
                 {
                     status = "400",
                     message = "Account number already exists"
                 };
             }
-          
+
             if (userWallets.Count() >= 4)
             {
-                 return new WalletApiResponse
+                return new WalletApiResponse
                 {
                     status = "400",
                     message = "Too many wallets.Cant add 5th card"
@@ -98,12 +96,13 @@ namespace Hubtel.Wallets.Api.Services
                     message = "Unsupported scheme. Should be one of [Mtn,Vodafone,Airteltigo,Visa,Mastercard]"
                 };
             }
-            
+
+            // Get first 6 numbers of account number when creating a Card wallet 
             if (wallet.Type == Wallet.AccountType.Card)
             {
                 wallet.AccountNumber = wallet.AccountNumber.Substring(0, 6);
             }
-            
+
             await _dbContext.Wallets.AddAsync(wallet);
             await _dbContext.SaveChangesAsync();
 
@@ -115,9 +114,10 @@ namespace Hubtel.Wallets.Api.Services
             };
         }
 
+        //Delete wallet
         public async Task<Wallet> Delete(string id)
         {
-            var wallet = await Task.Run(() =>
+            Wallet wallet = await Task.Run(() =>
             {
                 return _dbContext.Wallets.FirstOrDefault(w => w.Id == id);
             });
